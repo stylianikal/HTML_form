@@ -52,6 +52,12 @@
         border: none;
         border-radius: 4px;
     }
+    .error {
+        color: red;
+        font-size: 14px;
+        margin-top: 5px;
+        display: none;
+    }
 </style>
 <body>
     <div class="container">
@@ -67,9 +73,10 @@
 
             <label for="email">Email:</label>
             <input type="email" id="email" required>
+            <span class="error" id="emailError">Please enter a valid email</span>
 
             <label for="age">Age:</label>
-            <input type="number" id="age" min="12" max="120" required>
+            <input type="number" id="age" max="120" required>
 
             <label for="color">Favorite Color:</label>
             <select id="color" required>
@@ -82,16 +89,57 @@
 
             <label for="checkbox">Contact Preference:</label>
             <div class="checkboxes">
-                <label>Email</label>
-                <input type="checkbox" id="contactEmail" value="email"> 
-                <label>Phone Call</label>
-                <input type="checkbox" id="contactPhone" value="phone"> 
-                <label>SMS</label>
+                <input type="checkbox" id="contactEmail" value="email">
+                <label>by Email</label>
+                <input type="checkbox" id="contactPhone" value="phone">
+                <label>by Phone Call</label>
                 <input type="checkbox" id="contactSMS" value="sms">
+                <label>via SMS</label>
+                <span class="error" id="contactError">Please select at least one contact method.</span>
             </div>
 
             <button type="submit">Submit</button>
         </form>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const userForm = document.getElementById("form");
+
+            // form validations 
+            userForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                let validationError = false;
+                document.getElementById('contactError').style.display = 'none';
+                document.getElementById('emailError').style.display = 'none';
+
+                const name = document.getElementById("name").value;
+                const surname = document.getElementById("surname").value;
+                const email = document.getElementById("email").value;
+                const age = document.getElementById("age").value;
+                const color = document.getElementById("color").value;
+                const contactPreferences = Array.from(userForm.querySelectorAll("input[type='checkbox']:checked"))
+                                                .map(checkbox => checkbox.value);
+
+                // Validate inputs
+               
+                if (!validateEmail(email)) {
+                    document.getElementById('emailError').style.display = 'block';
+                    validationError = true;
+                }
+                
+                if (contactPreferences.length === 0) {
+                    document.getElementById('contactError').style.display = 'block';
+                    validationError = true;
+                }
+                if (!validationError){
+                    //Add user details to the table
+                }
+            });
+            function validateEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+        });
+    </script>
 </body>
 </html>
