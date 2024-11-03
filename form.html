@@ -58,6 +58,34 @@
         margin-top: 5px;
         display: none;
     }
+     table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            display: none; 
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .no-data {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            color: #555;
+            display: none; 
+        }
+        @media (max-width: 600px) {
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap; 
+            }
+        }
 </style>
 <body>
     <div class="container">
@@ -100,11 +128,34 @@
 
             <button type="submit">Submit</button>
         </form>
+
+        <div id="dataContainer">
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Surname</th>
+                        <th>Email</th>
+                        <th>Age</th>
+                        <th>Favorite Color</th>
+                        <th>Contact Preferences</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+            <div class="no-data" id="noDataMessage">No data available.</div>
+        </div>
+
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const userForm = document.getElementById("form");
+            const usersTable = document.getElementById("usersTable");
+            const tableBody = document.getElementById("tableBody");
+            const noDataMessage = document.getElementById("noDataMessage");
 
             // form validations 
             userForm.addEventListener("submit", (e) => {
@@ -121,7 +172,7 @@
                 const contactPreferences = Array.from(userForm.querySelectorAll("input[type='checkbox']:checked"))
                                                 .map(checkbox => checkbox.value);
 
-                // Validate inputs
+                // validate inputs
                
                 if (!validateEmail(email)) {
                     document.getElementById('emailError').style.display = 'block';
@@ -132,12 +183,50 @@
                     document.getElementById('contactError').style.display = 'block';
                     validationError = true;
                 }
-                if (!validationError){
-                    //Add user details to the table
-                }
+                if (validationError) return;
+
+                //create table
+                const newRow = tableBody.insertRow();
+                newRow.insertCell(0).innerText = name;
+                newRow.insertCell(1).innerText = surname;
+                newRow.insertCell(2).innerText = email;
+                newRow.insertCell(3).innerText = age;
+                newRow.insertCell(4).innerText = color;
+                newRow.insertCell(5).innerText = contactPreferences.join(", ");
+                
+                // delete button
+                const deleteCell = newRow.insertCell(6);
+                const deleteButton = document.createElement("button");
+                deleteButton.innerText = "Delete";
+                deleteButton.style.backgroundColor = "red";
+                deleteButton.style.color = "white";
+                deleteButton.style.border = "none";
+                deleteButton.style.borderRadius = "4px";
+                deleteButton.style.cursor = "pointer";
+                deleteButton.onclick = () => {
+                    tableBody.deleteRow(newRow.rowIndex - 1);
+                    checkIfTableIsEmpty();
+                };
+                deleteCell.appendChild(deleteButton);
+
+                // show table and hide "No data" message if there are users
+                usersTable.style.display = 'table';
+                noDataMessage.style.display = 'none';
+
+                // reset form
+                userForm.reset();
+
             });
+
             function validateEmail(email) {
                 return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+            function checkIfTableIsEmpty() {
+                if (tableBody.rows.length === 0) {
+                    //hide the table and show the no data message
+                    usersTable.style.display = 'none'; 
+                    noDataMessage.style.display = 'block'; 
+                }
             }
         });
     </script>
