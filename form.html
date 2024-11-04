@@ -171,7 +171,7 @@
                 return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
             }
             function validateString(string){
-                return /^[A-Za-z\s]{2,}$/.test(string);
+                return /^[A-Za-z\s]{2,30}$/.test(string);
             }
             function checkIfTableIsEmpty() {
                 if (tableBody.rows.length === 0) {
