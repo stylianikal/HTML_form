@@ -4,156 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <title>Form by Styliani Kalogirou</title>
+    <link rel="stylesheet" href="styling.css">
 </head>
-<style>
-    body {
-        margin: 0;
-        padding: 0;
-        background-color: #FFFFFF;
-        font-family: Arial, Helvetica, sans-serif;
-    }
-    .container {
-        max-width: 600px;
-        margin: 20px 0 20px 20px; 
-        padding: 20px;
-    }
-    h1 {
-        text-align: center;
-        font-size: 30px;
-    }
-    h3 {
-        font-size: 20px;
-    }
-    form {
-        display: grid;
-        gap: 10px;
-    }
-    form label {
-        padding: 10px;
-        font-size: 16px;
-    }
-    form input, form select {
-        padding: 10px;
-        font-size: 16px;
-        border: 1px solid #adacac;
-        border-radius: 4px;
-    }
-    .checkboxes {
-        font-size: 16px;
-        display: flex;
-        gap: 10px;
-    }
-    button[type="submit"] {
-        width: 100%;
-        padding: 10px;
-        font-size: 16px;
-        margin-top: 10px;
-        cursor: pointer;
-        background-color: lightgray;
-        border: none;
-        border-radius: 4px;
-    }
-    .error {
-        color: red;
-        font-size: 14px;
-        margin-top: 5px;
-        display: none;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-        display: none; 
-    }
-    th, td {
-        padding: 10px;
-        text-align: left;
-        border: 1px solid #ddd;
-    }
-    th {
-        background-color: #f2f2f2;
-    }
-    .no-data {
-        text-align: center;
-        margin-top: 20px;
-        font-size: 18px;
-        color: #555;
-        display: none; 
-    }
-    .deleteBtn {
-        background-color: red;
-        color: #FFFFFF;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-    .exportBtn {
-        border: none;
-        border-radius: 4px;
-        padding: 10px;
-        font-size: 16px;
-        margin-top: 10px;
-        cursor: pointer;
-        background-color: lightgray;
-        display: none;
-        float: right;
-        margin-bottom: 20px;
-    }
-    #exportModal {
-        display: none; 
-        position: fixed;
-        z-index: 1; 
-        left: 0;
-        top: 0;
-        width: 100%; 
-        height: 100%; 
-        overflow: auto; 
-        background-color: rgba(0, 0, 0, 0.5); 
-    }
-    .modal-content {
-        background-color: #fefefe;
-        margin: 15% auto; 
-        padding: 20px;
-        border: 1px solid #888;
-        width: fit-content;
-        position: relative;
-    }
-    #closeModal {
-        cursor: pointer;
-        position: absolute;
-        top: 10px;
-        right: 10px;
-    }
-    @media (max-width: 600px) {
-        .container {
-            margin: 0;
-        };
-        form {
-            width: 100%;
-        }
-        form input, form select {
-            font-size: 14px;
-        }
-        h1 {
-            font-size: 24px;
-        }
-        h3 {
-            font-size: 18px;
-        }
-        th, td {
-            padding: 8px;
-        }
-        table {
-            display: none;
-            white-space: nowrap;
-            margin-top: 20px;
-            overflow-x: scroll;
-        }
-        .exportBtn {
-            margin-bottom: 20px;
-        }
-    }
-</style>
 <body>
     <div class="container">
         <h1>Form by SK</h1>
@@ -187,25 +39,27 @@
             <label for="checkbox">Contact Preference:</label>
             <div class="checkboxes">
                 <input type="checkbox" id="contactEmail" value="email">
-                <label>by Email</label>
+                <label for="contactEmail">by Email</label>
                 <input type="checkbox" id="contactPhone" value="phone">
-                <label>by Phone Call</label>
+                <label for="contactPhone">by Phone Call</label>
                 <input type="checkbox" id="contactSMS" value="sms">
-                <label>via SMS</label>
+                <label for="contactSMS">via SMS</label>
             </div>
             <span class="error" id="contactError">Please select at least one contact method.</span>
-
+            
+            <div class="submit-container">
             <button type="submit">Submit</button>
+            </div>
         </form>
 
         <!-- Export Button -->
-        <button id="exportBtn" type="button" class="exportBtn">Export as JSON</button>
+        <button id="exportBtn" type="button" class="exportBtn">Export</button>
 
         <!-- Export Modal -->
         <div id="exportModal"  class="modal">
             <div class="modal-content">
                 <span id="closeModal">&times;</span>
-                <h2>Users as JSON</h2>
+                <h2>Export as JSON</h2>
                 <pre id="jsonOutput"></pre>
             </div>
         </div>
@@ -300,7 +154,7 @@
                 
                 const actionCell = row.insertCell(6);
                 const deleteButton = document.createElement("button");
-                deleteButton.innerText = "Delete";
+                deleteButton.innerText = "Delete Row";
                 deleteButton.onclick = () => confirmDeletion(row, user);
                 actionCell.appendChild(deleteButton);
             }

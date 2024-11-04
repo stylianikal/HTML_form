@@ -1,0 +1,145 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #FFFFFF;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.container {
+    max-width: 600px;
+    margin: 20px 0 20px 20px; 
+    padding: 20px;
+}
+h1 {
+    text-align: center;
+    font-size: 30px;
+}
+h3 {
+    font-size: 20px;
+}
+form {
+    display: grid;
+    gap: 10px;
+}
+form label {
+    padding: 10px;
+    font-size: 16px;
+}
+form input, form select {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #adacac;
+    border-radius: 4px;
+}
+.checkboxes {
+    font-size: 16px;
+    display: flex;
+    gap: 10px;
+}
+button[type="submit"] {
+    padding: 10px;
+    font-size: 16px;
+    margin-top: 10px;
+    cursor: pointer;
+    background-color: lightgray;
+    border: none;
+    border-radius: 4px;
+    width: 150px;
+}
+.submit-container {
+    display: flex;
+    justify-content: flex-end; 
+}
+.error {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+    display: none;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    display: none; 
+}
+th, td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+th {
+    background-color: lightgray;
+}
+.no-data {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 18px;
+    color: #555;
+    display: none; 
+}
+.exportBtn {
+    border: none;
+    border-radius: 4px;
+    padding: 10px;
+    font-size: 16px;
+    margin-top: 10px;
+    cursor: pointer;
+    background-color: lightgray;
+    display: none;
+    float: right;
+    margin-bottom: 20px;
+    width: 150px;
+}
+#exportModal {
+    display: none; 
+    position: fixed;
+    z-index: 1; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0, 0, 0, 0.5); 
+}
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; 
+    padding: 20px;
+    border: 1px solid #888;
+    width: fit-content;
+    position: relative;
+}
+#closeModal {
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+@media (max-width: 600px) {
+    .container {
+        margin: 0;
+    };
+    form {
+        width: 100%;
+    }
+    form input, form select {
+        font-size: 14px;
+    }
+    h1 {
+        font-size: 24px;
+    }
+    h3 {
+        font-size: 18px;
+    }
+    th, td {
+        padding: 8px;
+    }
+    table {
+        display: none;
+        white-space: nowrap;
+        margin-top: 20px;
+        overflow-x: scroll;
+    }
+    .exportBtn {
+        margin-bottom: 20px;
+    }
+}
