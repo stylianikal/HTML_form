@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <title>Form by Styliani Kalogirou</title>
 </head>
 <style>
@@ -58,34 +59,100 @@
         margin-top: 5px;
         display: none;
     }
-     table {
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        display: none; 
+    }
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    .no-data {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 18px;
+        color: #555;
+        display: none; 
+    }
+    .deleteBtn {
+        background-color: red;
+        color: #FFFFFF;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .exportBtn {
+        border: none;
+        border-radius: 4px;
+        padding: 10px;
+        font-size: 16px;
+        margin-top: 10px;
+        cursor: pointer;
+        background-color: lightgray;
+        display: none;
+        float: right;
+        margin-bottom: 20px;
+    }
+    #exportModal {
+        display: none; 
+        position: fixed;
+        z-index: 1; 
+        left: 0;
+        top: 0;
+        width: 100%; 
+        height: 100%; 
+        overflow: auto; 
+        background-color: rgba(0, 0, 0, 0.5); 
+    }
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; 
+        padding: 20px;
+        border: 1px solid #888;
+        width: fit-content;
+        position: relative;
+    }
+    #closeModal {
+        cursor: pointer;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+    @media (max-width: 600px) {
+        .container {
+            margin: 0;
+        };
+        form {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            display: none; 
+        }
+        form input, form select {
+            font-size: 14px;
+        }
+        h1 {
+            font-size: 24px;
+        }
+        h3 {
+            font-size: 18px;
         }
         th, td {
-            padding: 10px;
-            text-align: left;
-            border: 1px solid #ddd;
+            padding: 8px;
         }
-        th {
-            background-color: #f2f2f2;
-        }
-        .no-data {
-            text-align: center;
+        table {
+            display: none;
+            white-space: nowrap;
             margin-top: 20px;
-            font-size: 18px;
-            color: #555;
-            display: none; 
+            overflow-x: scroll;
         }
-        @media (max-width: 600px) {
-            table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap; 
-            }
+        .exportBtn {
+            margin-bottom: 20px;
         }
+    }
 </style>
 <body>
     <div class="container">
@@ -95,16 +162,18 @@
         <form id="form">
             <label for="name">Name:</label>
             <input type="text" id="name" required>
+            <span class="error" id="nameError">Please enter a valid name</span>
 
             <label for="surname">Surname:</label>
             <input type="text" id="surname" required>
+            <span class="error" id="surnameError">Please enter a valid surname</span>
 
             <label for="email">Email:</label>
             <input type="email" id="email" required>
             <span class="error" id="emailError">Please enter a valid email</span>
 
             <label for="age">Age:</label>
-            <input type="number" id="age" max="120" required>
+            <input type="number" id="age" min="1" max="120" required>
 
             <label for="color">Favorite Color:</label>
             <select id="color" required>
@@ -123,13 +192,25 @@
                 <label>by Phone Call</label>
                 <input type="checkbox" id="contactSMS" value="sms">
                 <label>via SMS</label>
-                <span class="error" id="contactError">Please select at least one contact method.</span>
             </div>
+            <span class="error" id="contactError">Please select at least one contact method.</span>
 
             <button type="submit">Submit</button>
         </form>
 
-        <div id="dataContainer">
+        <!-- Export Button -->
+        <button id="exportBtn" type="button" class="exportBtn">Export as JSON</button>
+
+        <!-- Export Modal -->
+        <div id="exportModal"  class="modal">
+            <div class="modal-content">
+                <span id="closeModal">&times;</span>
+                <h2>Users as JSON</h2>
+                <pre id="jsonOutput"></pre>
+            </div>
+        </div>
+
+        <div id="tableContainer">
             <table id="usersTable">
                 <thead>
                     <tr>
@@ -156,14 +237,20 @@
             const usersTable = document.getElementById("usersTable");
             const tableBody = document.getElementById("tableBody");
             const noDataMessage = document.getElementById("noDataMessage");
+            const exportModal = document.getElementById("exportModal");
+            const exportBtn = document.getElementById("exportBtn");
+
+            let users = [];
 
             // form validations 
             userForm.addEventListener("submit", (e) => {
                 e.preventDefault();
                 let validationError = false;
+                document.getElementById('nameError').style.display = 'none';
+                document.getElementById('surnameError').style.display = 'none';
                 document.getElementById('contactError').style.display = 'none';
                 document.getElementById('emailError').style.display = 'none';
-
+            
                 const name = document.getElementById("name").value;
                 const surname = document.getElementById("surname").value;
                 const email = document.getElementById("email").value;
@@ -173,7 +260,15 @@
                                                 .map(checkbox => checkbox.value);
 
                 // validate inputs
-               
+
+               if (!validateString(name)){
+                    document.getElementById('nameError').style.display = 'block';
+                    validationError = true;
+                }
+               if (!validateString(surname)){
+                    document.getElementById('surnameError').style.display = 'block';
+                    validationError = true;
+                }
                 if (!validateEmail(email)) {
                     document.getElementById('emailError').style.display = 'block';
                     validationError = true;
@@ -184,50 +279,76 @@
                     validationError = true;
                 }
                 if (validationError) return;
-
-                //create table
-                const newRow = tableBody.insertRow();
-                newRow.insertCell(0).innerText = name;
-                newRow.insertCell(1).innerText = surname;
-                newRow.insertCell(2).innerText = email;
-                newRow.insertCell(3).innerText = age;
-                newRow.insertCell(4).innerText = color;
-                newRow.insertCell(5).innerText = contactPreferences.join(", ");
-                
-                // delete button
-                const deleteCell = newRow.insertCell(6);
-                const deleteButton = document.createElement("button");
-                deleteButton.innerText = "Delete";
-                deleteButton.style.backgroundColor = "red";
-                deleteButton.style.color = "white";
-                deleteButton.style.border = "none";
-                deleteButton.style.borderRadius = "4px";
-                deleteButton.style.cursor = "pointer";
-                deleteButton.onclick = () => {
-                    tableBody.deleteRow(newRow.rowIndex - 1);
-                    checkIfTableIsEmpty();
-                };
-                deleteCell.appendChild(deleteButton);
-
-                // show table and hide "No data" message if there are users
-                usersTable.style.display = 'table';
-                noDataMessage.style.display = 'none';
-
+               
+                // Add user to the list and table
+                const user = { name, surname, email, age, color, contactPreferences };
+                users.push(user);
+                addUserToTable(user);
+                checkIfTableIsEmpty()
                 // reset form
                 userForm.reset();
 
             });
-
+            function addUserToTable(user) {
+                const row = tableBody.insertRow();
+                row.insertCell(0).innerText = user.name;
+                row.insertCell(1).innerText = user.surname;
+                row.insertCell(2).innerText = user.email;
+                row.insertCell(3).innerText = user.age;
+                row.insertCell(4).innerText = user.color;
+                row.insertCell(5).innerText = user.contactPreferences.join(", ");
+                
+                const actionCell = row.insertCell(6);
+                const deleteButton = document.createElement("button");
+                deleteButton.innerText = "Delete";
+                deleteButton.onclick = () => confirmDeletion(row, user);
+                actionCell.appendChild(deleteButton);
+            }
+            function confirmDeletion(row, user) {
+                if (confirm("Are you sure you want to delete this entry?")) {
+                    row.remove();
+                    users = users.filter(u => u !== user);
+                    if (users.length === 0) {
+                        checkIfTableIsEmpty()
+                    }
+                }
+            }
             function validateEmail(email) {
                 return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+            function validateString(string){
+                return /^[A-Za-z\s]{2,}$/.test(string);
             }
             function checkIfTableIsEmpty() {
                 if (tableBody.rows.length === 0) {
                     //hide the table and show the no data message
                     usersTable.style.display = 'none'; 
                     noDataMessage.style.display = 'block'; 
+                    exportBtn.style.display = 'none'
+                }
+                else{
+                    usersTable.style.display = 'block';
+                    noDataMessage.style.display = 'none';
+                    exportBtn.style.display = 'block'
                 }
             }
+            // Export to JSON
+            document.getElementById("exportBtn").addEventListener("click", () => {
+                jsonOutput.innerText = JSON.stringify(users, null, 2);
+                exportModal.style.display = "block"; 
+            });
+
+            // close the modal when the user clicks on  (x)
+            document.getElementById("closeModal").addEventListener("click", () => {
+                exportModal.style.display = "none"; 
+            });
+
+            // Close the modal when clicking anywhere outside of the modal content
+            window.addEventListener("click", (event) => {
+                if (event.target === exportModal) {
+                    exportModal.style.display = "none"; 
+                }
+            });
         });
     </script>
 </body>
